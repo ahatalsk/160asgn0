@@ -1,2 +1,2 @@
-# CSE 160 Assignment 0
-## Vector Library
+# CSE 160 Assignments
+## Assignment 0: Vector Library
