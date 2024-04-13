@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Draw a point (1)</title>
+  </head>
+
+  <body onload="main()">
+    <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <p>
+    
+    <button type="button" id="clearButton">Clear</button>
+    <button type="button" id="undoButton">Undo</button>
+    <button type="button" id="backgroundButton">Set Background</button>
+    <button type="button" id="randomButton">Random</button>
+    <button type="button" id="pictureButton">Picture</button>
+    <p>
+    
+    <button type="button" id="squareButton">Square</button>
+    <button type="button" id="triButton">Triangle</button>
+    <button type="button" id="circleButton">Circle</button>
+    <button type="button" id="starButton">Star</button>
+    <button type="button" id="heartButton">Heart</button>
+
+    <p>
+    Red <input type="range" min="0" max="100" value="100" class="slider" id="redSlide">
+    <p>
+    Green <input type="range" min="0" max="100" value="100" class="slider" id="greenSlide">
+    <p>
+    Blue <input type="range" min="0" max="100" value="100" class="slider" id="blueSlide">
+    <p>
+    Size <input type="range" min="5" max="40" value="10" class="slider" id="sizeSlide">
+    <p>
+    (Circles) Segments <input type="range" min="3" max="20" value="10" class="slider" id="segSlide">
+    <p>
+    
+    <br>
+    Reference Picture:
+    <p>
+    <img src="Reference.jpg" width="500" height="400">
+    
+    <script src="../libs/webgl-utils.js"></script>
+    <script src="../libs/webgl-debug.js"></script>
+    <script src="../libs/cuon-utils.js"></script>
+    <script src="Square.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Circle.js"></script>
+    <script src="Star.js"></script>
+    <script src="Heart.js"></script>
+    <script src="ColoredPoints.js"></script>
+  </body>
+</html>
+
