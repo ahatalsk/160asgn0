@@ -1,0 +1,209 @@
+        // Cylinder to make the house
+    {
+        const loader = new THREE.TextureLoader();
+        const texture= loader.load( '../../libs/images/tower.jpg' );
+        texture.colorSpace = THREE.SRGBColorSpace;
+        
+        const material = new THREE.MeshPhongMaterial({
+            map: texture,
+        });
+        
+        const radiusTop =  0.5;
+        const radiusBottom =  0.5;
+        const height =  7;
+        const radialSegments = 12;
+        const geometry = new THREE.CylinderGeometry(
+            radiusTop, radiusBottom, height, radialSegments );
+        const color = 0x30140B;
+        //const material = new THREE.MeshBasicMaterial({color: color});
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(3, 3.5, 5);
+        scene.add(mesh);
+    }
+    
+    
+    /*{
+        const loader = new THREE.TextureLoader();
+        const texturesimma = loader.load( '../../libs/images/simma.jpg' );
+        texturesimma.colorSpace = THREE.SRGBColorSpace;
+        
+        const materialsimma = new THREE.MeshPhongMaterial({
+        map: texturesimma,
+        });
+        
+        const cubeSize = 4;
+        const cubeGeo = new THREE.BoxGeometry( cubeSize, cubeSize, cubeSize );
+        //const cubeMat = new THREE.MeshPhongMaterial( { color: '#8AC' } );
+        const mesh = new THREE.Mesh( cubeGeo,  materialsimma );
+        mesh.position.set( cubeSize + 1, cubeSize / 2 + 3, 0 );
+        scene.add( mesh );
+        
+    }*/
+    
+    
+    
+        /*{
+        
+        const objLoader = new OBJLoader();
+        objLoader.load( '../../libs/models/plant/indoor_plant_02.obj', ( root ) => {
+
+            scene.add( root );
+
+        } );
+        
+    }*/
+    
+    /*{
+     
+         const objLoader = new OBJLoader();
+         objLoader.load('../../libs/IndoorPotPlant/plant_obj/indor_plant_02.obj', (root) => {
+             const materials = {
+                   Material: new THREE.MeshPhongMaterial(),
+                   plant: new THREE.MeshPhongMaterial(),
+             };
+             root.traverse(node => {
+                 const material = materials[node.material?.name];
+                 if (material) {
+                     node.material = material;
+                 }
+             })
+             scene.add(root);
+         });
+     
+     }*/
+     
+     
+     
+     
+     
+         
+    /*
+    {
+        const objLoader = new OBJLoader();
+        objLoader.load('../../libs/IndoorPotPlant/plant_obj/indor_plant_02.obj', (root) => {
+            const materials = {
+                  Material: new THREE.MeshPhongMaterial({...}),
+                  windmill: new THREE.MeshPhongMaterial({...}),
+            };
+            root.traverse(node => {
+                const material = materials[node.material?.name];
+                if (material) {
+                    node.material = material;
+                }
+            })
+            scene.add(root);
+        });
+    }
+        const objLoader = new OBJLoader();
+        const mtlLoader = new MTLLoader();
+        mtlLoader.load('../../libs/IndoorPotPlant/plant_obj/indor_plant_02.mtl', (mtl) => {
+            mtl.preload();
+            for (const material of Object.values(mtl.materials)) {
+                material.side = THREE.DoubleSide;
+            }
+            objLoader.setMaterials(mtl);
+        objLoader.load('../../libs/IndoorPotPlant/plant_obj/indor_plant_02.obj', (root) => {
+            scene.add(root);
+        });
+        });
+    }
+     
+     */
+
+    /*const boxWidth = 1;
+    const boxHeight = 1;
+    const boxDepth = 1;
+    const geometryBox = new THREE.BoxGeometry( boxWidth, boxHeight, boxDepth );
+    
+    const radius = 0.5;
+    const height = 1;
+    const radialSegments = 32;
+    const geometryCone = new THREE.ConeGeometry( radius, height, radialSegments );
+    
+    const loader = new THREE.TextureLoader();
+    const texturesimma = loader.load( '../../libs/simma.jpg' );
+    texturesimma.colorSpace = THREE.SRGBColorSpace;
+    const texturepepper = loader.load( '../../libs/pepper.jpg' );
+    texturepepper.colorSpace = THREE.SRGBColorSpace;
+     
+    const materialsimma = new THREE.MeshBasicMaterial({
+      map: texturesimma,
+    });
+    const materialpepper = new THREE.MeshBasicMaterial({
+      map: texturepepper,
+    });
+    
+    const cube1 = makeInstance(scene, geometryBox, 0x7eeb17, 0);
+    
+    const cube2 = new THREE.Mesh(geometryBox, materialsimma);
+    scene.add(cube2);
+    cube2.position.x = 2;
+    
+    const cube3 = new THREE.Mesh(geometryBox, materialpepper);
+    scene.add(cube3);
+    cube3.position.x = -2;
+    
+    const cone4 = makeInstance(scene, geometryCone, 0xfaba25, 4);
+    const cone5 = makeInstance(scene, geometryCone, 0x6e37db, -4);
+    
+    const color = 0xFFFFFF;
+    const intensity = 3;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-1, 2, 4);
+    scene.add(light);
+    
+    function render(time) {
+        time *= 0.001;  // convert time to seconds
+        
+        if (resizeRendererToDisplaySize(renderer)) {
+            const canvas = renderer.domElement;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+        }
+        
+        const canvas = renderer.domElement;
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+     
+        cube1.rotation.x = 2 * time;
+        cube1.rotation.y = 2 * time;
+        cube2.rotation.x = time;
+        cube2.rotation.y = time;
+        cube3.rotation.x = time;
+        cube3.rotation.y = time;
+        cone4.rotation.x = 4 * time;
+        cone5.rotation.x = 0.25 * time;
+     
+        renderer.render(scene, camera);
+     
+        requestAnimationFrame(render);
+    }
+    
+    // Tells you if the renderer needs to be resized
+    function resizeRendererToDisplaySize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+            renderer.setSize(width, height, false);
+        }
+        return needResize;
+    }
+    
+    requestAnimationFrame(render);*/
+}
+
+
+// Function to create a new shape and add it to the scene
+// Params: the scene object, the geometry, the color, the x-position
+function makeInstance(scene, geometry, color, x) {
+    const material = new THREE.MeshPhongMaterial({color});
+ 
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+ 
+    cube.position.x = x;
+ 
+    return cube;
+}
