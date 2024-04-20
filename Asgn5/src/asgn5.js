@@ -27,7 +27,7 @@ function main() {
         const planeSize = 60;
         
         const loader = new THREE.TextureLoader();
-        const texture = loader.load( '../../libs/images/water.png' );
+        const texture = loader.load( '../lib/images/water.png' );
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.magFilter = THREE.NearestFilter;
@@ -59,7 +59,7 @@ function main() {
 
     // Sphere to represent the moon
     const loader = new THREE.TextureLoader();
-    const texture= loader.load( '../../libs/images/moon.jpg' );
+    const texture= loader.load( '../lib/images/moon.jpg' );
     texture.colorSpace = THREE.SRGBColorSpace;
     
     const moonMat = new THREE.MeshPhongMaterial({
@@ -83,10 +83,10 @@ function main() {
     {
         const objLoader = new OBJLoader();
         const mtlLoader = new MTLLoader();
-        mtlLoader.load('../../libs/models/mountain/part.mtl', (mtl) => {
+        mtlLoader.load('../lib/models/mountain/part.mtl', (mtl) => {
             mtl.preload();
             objLoader.setMaterials(mtl);
-        objLoader.load('../../libs/models/mountain/part.obj', (root) => {
+        objLoader.load('../lib/models/mountain/part.obj', (root) => {
             scene.add(root);
         });
         });
