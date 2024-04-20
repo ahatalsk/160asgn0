@@ -207,3 +207,44 @@ function makeInstance(scene, geometry, color, x) {
  
     return cube;
 }
+
+
+
+
+  <script type="module" src="../../libs/three/node_modules/three/build/three.module.js"></script>
+  <script type="module" src="../../libs/three/node_modules/three/examples/jsm/controls/OrbitControls.js"></script>
+  <script type="module" src="../../libs/three/node_modules/three/examples/jsm/loaders/OBJLoader.js"></script>
+  <script type="module" src="../../libs/three/node_modules/three/examples/jsm/loaders/MTLLoader.js"></script>
+
+
+
+import * as THREE from "../../libs/three/node_modules/three/build/three.module.js";
+import {OrbitControls} from '../../libs/three/node_modules/three/examples/jsm/controls/OrbitControls.js';
+import { GUI } from '../../libs/three/node_modules/three/examples/jsm/libs/lil-gui.module.min.js';
+import {OBJLoader} from '../../libs/three/node_modules/three/examples/jsm/loaders/OBJLoader.js';
+import {MTLLoader} from '../../libs/three/node_modules/three/examples/jsm/loaders/MTLLoader.js';
+
+
+"gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19"
+import * as GUI from 'gui';
+
+    class ColorGUIHelper {
+        constructor( object, prop ) {
+            this.object = object;
+            this.prop = prop;
+        }
+        
+        get value() {
+            return `#${this.object[ this.prop ].getHexString()}`;
+        }
+
+        set value( hexString ) {
+            this.object[ this.prop ].set( hexString );
+        }
+    }
+    
+            
+        const gui = new GUI();
+        gui.addColor(new ColorGUIHelper(light3, 'color'), 'value').name('skyLightColor');
+        gui.addColor(new ColorGUIHelper(light1, 'color'), 'value').name('sunlightColor');
+

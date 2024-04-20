@@ -16,15 +16,21 @@
            display: block;
         }
     </style>
+    
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+        }
+      }
+    </script>
 
   </head>
   <body>
     <canvas id="c" data-engine="three.js r163"></canvas>
   </body>
-  <script type="module" src="../../libs/three/node_modules/three/build/three.module.js"></script>
-  <script type="module" src="../../libs/three/node_modules/three/examples/jsm/controls/OrbitControls.js"></script>
-  <script type="module" src="../../libs/three/node_modules/three/examples/jsm/loaders/OBJLoader.js"></script>
-  <script type="module" src="../../libs/three/node_modules/three/examples/jsm/loaders/MTLLoader.js"></script>
+
   <script type="module" src="asgn5.js"></script>
 </html>
 

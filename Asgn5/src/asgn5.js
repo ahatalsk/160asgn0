@@ -1,8 +1,7 @@
-import * as THREE from "../../libs/three/node_modules/three/build/three.module.js";
-import {OrbitControls} from '../../libs/three/node_modules/three/examples/jsm/controls/OrbitControls.js';
-import { GUI } from '../../libs/three/node_modules/three/examples/jsm/libs/lil-gui.module.min.js';
-import {OBJLoader} from '../../libs/three/node_modules/three/examples/jsm/loaders/OBJLoader.js';
-import {MTLLoader} from '../../libs/three/node_modules/three/examples/jsm/loaders/MTLLoader.js';
+import * as THREE from "three";
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
 
 function main() {
     
@@ -92,21 +91,6 @@ function main() {
         });
         });
     }
-
-    class ColorGUIHelper {
-        constructor( object, prop ) {
-            this.object = object;
-            this.prop = prop;
-        }
-        
-        get value() {
-            return `#${this.object[ this.prop ].getHexString()}`;
-        }
-
-        set value( hexString ) {
-            this.object[ this.prop ].set( hexString );
-        }
-    }
     
     // Directional light to rotate around the canvas with the sun, pointing at the center (0, 0, 0)
     const color = 0xFFFFFF;
@@ -118,7 +102,7 @@ function main() {
     scene.add(light1.target);
     
     {
-  
+        
         // Hemisphere light
         const skyColor = 0x0000FF;
         const groundColor = 0x000000;
@@ -126,9 +110,6 @@ function main() {
         const light3 = new THREE.HemisphereLight(skyColor, groundColor, intensity3);
         scene.add(light3);
         
-        const gui = new GUI();
-        gui.addColor(new ColorGUIHelper(light3, 'color'), 'value').name('skyLightColor');
-        gui.addColor(new ColorGUIHelper(light1, 'color'), 'value').name('sunlightColor');
     }
 
     function resizeRendererToDisplaySize( renderer ) {
