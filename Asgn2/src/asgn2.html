@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Draw a point (1)</title>
+    <title>Rainbow Trout</title>
   </head>
 
   <body onload="main()">
@@ -23,13 +23,16 @@
     </p>
 
     <p>
-    Camera Angle <input type="range" min="-180" max="180" value="0" class="slider" id="angleSlide">
+    Camera Angle: <input type="range" min="-180" max="180" value="30" class="slider" id="angleSlide">
+    <button type="button" id="verticalButton">Vertical</button>
+    <button type="button" id="horizontalButton">Horizontal</button>
     <p>
-    Red <input type="range" min="-45" max="45" value="0" class="slider" id="redSlide">
+    Tail: <input type="range" min="-15" max="15" value="0" class="slider" id="tail1Slide">
+    <input type="range" min="-15" max="15" value="0" class="slider" id="tail2Slide">
+    <input type="range" min="-15" max="15" value="0" class="slider" id="tail3Slide">
+    <input type="range" min="-15" max="15" value="0" class="slider" id="tail4Slide">
     <p>
-    Yellow <input type="range" min="-45" max="45" value="0" class="slider" id="yellowSlide">
-    <p>
-    Magenta <input type="range" min="-45" max="45" value="0" class="slider" id="magentaSlide">
+    Jaw: <input type="range" min="0" max="30" value="30" class="slider" id="jawSlide">
     <p>
     
     <script src="../../libs/webgl-utils.js"></script>
