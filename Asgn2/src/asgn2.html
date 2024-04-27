@@ -10,12 +10,13 @@
     <br>
     ahatalsk@ucsc.edu
     <br>
-    Notes to grader:
+    Notes to grader: This rainbow trout is made of 68 transformed cubes. Its basic animation is tail, mouth, and front fin movement to create a swimming motion. On a shift-click, the fish will do a special animation where it swims faster, gets an angry expression, and eats a small fish that appears from off screen. The tail has 5 joints that are controllable by the user.
     </p>
       
     <canvas id="webgl" width="1000" height="600">
     Please use a browser that supports "canvas"
     </canvas>
+    <p id="fps"></p>
     <p>
     <p>Animation:
     <button type="button" id="animationOnButton">ON</button>
@@ -23,25 +24,28 @@
     </p>
 
     <p>
-    Camera Angle: <input type="range" min="-180" max="180" value="30" class="slider" id="angleSlide">
-    <button type="button" id="verticalButton">Vertical</button>
-    <button type="button" id="horizontalButton">Horizontal</button>
+    Camera Angle:
+    <button type="button" id="frontButton">Front</button>
+    <button type="button" id="backButton">Back</button>
+    <button type="button" id="topButton">Top</button>
+    <button type="button" id="bottomButton">Bottom</button>
+    <button type="button" id="headButton">Head</button>
+    <button type="button" id="tailButton">Tail</button>
     <p>
     Tail: <input type="range" min="-15" max="15" value="0" class="slider" id="tail1Slide">
     <input type="range" min="-15" max="15" value="0" class="slider" id="tail2Slide">
     <input type="range" min="-15" max="15" value="0" class="slider" id="tail3Slide">
     <input type="range" min="-15" max="15" value="0" class="slider" id="tail4Slide">
+    <input type="range" min="-15" max="15" value="0" class="slider" id="tail5Slide">
     <p>
-    Jaw: <input type="range" min="0" max="30" value="30" class="slider" id="jawSlide">
+    Jaw: 
+    <input type="range" min="0" max="30" value="30" class="slider" id="jawSlide">
     <p>
     
     <script src="../../libs/webgl-utils.js"></script>
     <script src="../../libs/webgl-debug.js"></script>
     <script src="../../libs/cuon-utils.js"></script>
     <script src="../../libs/cuon-matrix.js"></script>
-    <script src="Point.js"></script>
-    <script src="Triangle.js"></script>
-    <script src="Circle.js"></script>
     <script src="Cube.js"></script>
     <script src="asgn2.js"></script>
   </body>
