@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Blocky World</title>
+  </head>
+
+  <body onload="main()">
+    <p>Alex Hatalsky
+    <br>
+    ahatalsk@ucsc.edu
+    <br>
+    Notes to grader:
+    </p>
+      
+    <canvas id="webgl" width="600" height="600">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <p id="fps"></p>
+    <p>
+
+    <p>
+    Camera Angle:
+    <input type="range" min="-180" max="180" value="0" class="slider" id="angleSlide">
+    <p>
+    <button type="button" id="frontButton">Front</button>
+    <button type="button" id="backButton">Back</button>
+    <button type="button" id="topButton">Top</button>
+    <button type="button" id="bottomButton">Bottom</button>
+    <button type="button" id="headButton">Head</button>
+    <button type="button" id="tailButton">Tail</button>
+    <p>
+    
+    <script src="../../libs/webgl-utils.js"></script>
+    <script src="../../libs/webgl-debug.js"></script>
+    <script src="../../libs/cuon-utils.js"></script>
+    <script src="../../libs/cuon-matrix.js"></script>
+    <script src="Cube.js"></script>
+    <script src="asgn3.js"></script>
+  </body>
+</html>
+
