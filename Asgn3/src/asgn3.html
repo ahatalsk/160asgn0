@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Blocky World</title>
+    <title>Flower Garden</title>
   </head>
 
   <body onload="main()">
@@ -10,7 +10,15 @@
     <br>
     ahatalsk@ucsc.edu
     <br>
-    Notes to grader:
+    Notes to grader: This world is a flower garden world, with a courtyard in the center and a maze of hedges around the edge. 
+    I modified the 2D hard-coded array so it includes "special" numbers that will generate specific features other than wall blocks. 
+    For example, a 5 on the map generates a stepping stone and an 8 on the map generates a tree. I also added a game feature to the world
+    so users can press the "Maze" button, which will take them to a random corner of the map and they must find their way back to the center 
+    (or cheat by pressing the "Reset" button). I also added add/delete block buttons that will add/delete a block if possible.
+    This function calculates the angle of the camera to determine which quadrant the user is currently looking at to determine where to add/delete the block.
+    I also added randomized flowers to the center of the map. Each time the world is reloaded, a flower map is generated wit hrandom numbers and,
+    depending on the threshhold set by the slider, will populate the spaces with flowers. For the "wow" factor, I tried to make my world very pretty and detailed.
+    I also drew all of my own textures, so every texture in my world from the hedges to the cloudy sky was drawn by me in a pixel drawing editor.  
     </p>
       
     <canvas id="webgl" width="600" height="600">
@@ -19,22 +27,22 @@
     <p id="fps"></p>
     <p>
 
+    <button type="button" id="mazeButton">Maze</button>
+    <button type="button" id="resetButton">Reset</button>
+    <button type="button" id="topViewButton">Top View</button>
     <p>
-    Camera Angle:
-    <input type="range" min="-180" max="180" value="0" class="slider" id="angleSlide">
+    <button type="button" id="breakButton">Break Block</button>
+    <button type="button" id="addButton">Add Block</button>
     <p>
-    <button type="button" id="frontButton">Front</button>
-    <button type="button" id="backButton">Back</button>
-    <button type="button" id="topButton">Top</button>
-    <button type="button" id="bottomButton">Bottom</button>
-    <button type="button" id="headButton">Head</button>
-    <button type="button" id="tailButton">Tail</button>
+    Flower Frequency:
+    <input type="range" min="0.0" max="1.0" value="0.2" step = 0.1 class="slider" id="angleSlide">
     <p>
     
     <script src="../../libs/webgl-utils.js"></script>
     <script src="../../libs/webgl-debug.js"></script>
     <script src="../../libs/cuon-utils.js"></script>
-    <script src="../../libs/cuon-matrix.js"></script>
+    <script src="../lib/cuon-matrix-cse160.js"></script>
+    <script src="Camera.js"></script>
     <script src="Cube.js"></script>
     <script src="asgn3.js"></script>
   </body>
