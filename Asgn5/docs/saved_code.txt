@@ -248,3 +248,67 @@ import * as GUI from 'gui';
         gui.addColor(new ColorGUIHelper(light3, 'color'), 'value').name('skyLightColor');
         gui.addColor(new ColorGUIHelper(light1, 'color'), 'value').name('sunlightColor');
 
+
+
+/*{
+        // Plane to represent the ocean
+        const planeSize = 60;
+        
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load( '../lib/images/water.png' );
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.magFilter = THREE.NearestFilter;
+        texture.colorSpace = THREE.SRGBColorSpace;
+        const repeats = planeSize / 2;
+        texture.repeat.set( repeats, repeats );
+        
+        const planeGeo = new THREE.PlaneGeometry( planeSize, planeSize );
+        const planeMat = new THREE.MeshPhongMaterial( {
+        map: texture,
+        side: THREE.DoubleSide,
+        } );
+        const mesh = new THREE.Mesh( planeGeo, planeMat );
+        mesh.rotation.x = Math.PI * - .5;
+        scene.add( mesh );
+        
+    }*/
+
+
+
+function keydown(ev) {
+    if (ev.keyCode == 68) {
+        cameraPos[0] += 5;
+        cameraTarget[0] += 5;
+        camera.position.set(cameraPos[0], cameraPos[1], cameraPos[2]);
+        controls.target.set( cameraTarget[0], cameraTarget[1], cameraTarget[2] );
+        controls.update();
+      } 
+      else if (ev.keyCode == 65) {
+        cameraPos[0] -= 5;
+        cameraTarget[0] -= 5;
+        camera.position.set(cameraPos[0], cameraPos[1], cameraPos[2]);
+        controls.target.set( cameraTarget[0], cameraTarget[1], cameraTarget[2] );
+        controls.update();
+      }
+      else if (ev.keyCode == 87) {
+        cameraPos[2] -= 5;
+        cameraTarget[2] -= 5;
+        camera.position.set(cameraPos[0], cameraPos[1], cameraPos[2]);
+        controls.target.set( cameraTarget[0], cameraTarget[1], cameraTarget[2] );
+        controls.update();
+      }
+      else if (ev.keyCode == 83) {
+        cameraPos[2] += 5;
+        cameraTarget[2] += 5;
+        camera.position.set(cameraPos[0], cameraPos[1], cameraPos[2]);
+        controls.target.set( cameraTarget[0], cameraTarget[1], cameraTarget[2] );
+        controls.update();
+      }
+      else if (ev.keyCode == 81) {
+        g_camera.lookLeft();
+      }
+      else if (ev.keyCode == 69) {
+        g_camera.lookRight();
+      }
+}
