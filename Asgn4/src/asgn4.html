@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lighting</title>
+  </head>
+
+  <body onload="main()">
+    <p>Alex Hatalsky
+    <br>
+    ahatalsk@ucsc.edu
+    <br>
+    Notes to grader: For this assignment I added both a point light and a spotlight to my blocky world. 
+    The point light takes in a position and color, and calculates the ambient, diffuse, and specular lighting.
+    It can be toggled on/off, animated, and the position/color are adjustable. The spotlight takes in a position, 
+    a target, and a radius, and increases the brightness of any fragment within a certain angle of the 
+    target-position vector. It can be toggled on/off, animated, and the radius is adjustable. It is especially 
+    visible in top view. The blocky world still maintains full functionality. 
+    </p>
+      
+    <canvas id="webgl" width="600" height="600">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <p id="fps"></p>
+    <p>
+    Normal: 
+    <button type="button" id="normalOn">On</button>
+    <button type="button" id="normalOff">Off</button>
+    
+    Light: 
+    <button type="button" id="lightOn">Point</button>
+    <button type="button" id="spotLightOn">Spot</button>
+    <button type="button" id="lightOff">Off</button>
+    
+    Animation: 
+    <button type="button" id="animationOn">Point</button>
+    <button type="button" id="spotAnimationOn">Spot</button>
+    <button type="button" id="animationOff">Off</button>
+    <p>
+    <button type="button" id="mazeButton">Maze</button>
+    <button type="button" id="resetButton">Reset</button>
+    <button type="button" id="topViewButton">Top View</button>
+    <p>
+    <button type="button" id="breakButton">Break Block</button>
+    <button type="button" id="addButton">Add Block</button>
+    <p>
+    Flower Frequency:
+    <input type="range" min="0.0" max="1.0" value="0.2" step = 0.1 class="slider" id="flowerSlide">
+    <p>
+    Light X<input type="range" min="-4" max="4" value="0" step="0.01" class="slider" id="lightSlideX">
+     Y<input type="range" min="-4" max="4" value="1.5" step="0.01" class="slider" id="lightSlideY">
+     Z<input type="range" min="-4" max="4" value="0" step="0.01" class="slider" id="lightSlideZ">
+    <p>
+     Color R<input type="range" min="0" max="1" value="1" step="0.01" class="slider" id="colorSlideR">
+     G<input type="range" min="0" max="1" value="1" step="0.01" class="slider" id="colorSlideG">
+     B<input type="range" min="0" max="1" value="1" step="0.01" class="slider" id="colorSlideB">
+    <p>
+    Spotlight Radius <input type="range" min="0" max="1" value="0.05" step="0.01" class="slider" id="spotLightRadius">
+    
+      
+    
+    <script src="../../libs/webgl-utils.js"></script>
+    <script src="../../libs/webgl-debug.js"></script>
+    <script src="../../libs/cuon-utils.js"></script>
+    <script src="../lib/cuon-matrix-cse160.js"></script>
+    <script src="Camera.js"></script>
+    <script src="Cube.js"></script>
+    <script src="Sphere.js"></script>
+    <script src="asgn4.js"></script>
+  </body>
+</html>
+
