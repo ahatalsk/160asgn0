@@ -5,16 +5,18 @@ import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
 
 // Global vars
 let canvas;
-let cameraPos = [0, 0, 500];
+let cameraPos = [0, 0, 700];
 let cameraTarget = [0, 0, 0];
 let controls;
 let camera;
+let ufoAnimation = false;
+let animationStartTime = 0;
 
 function cameraSetup() {
     const fov = 45;
     const aspect = 2; // the canvas default
     const near = 1.0;
-    const far = 2000;
+    const far = 3000;
     camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
     camera.position.set(cameraPos[0], cameraPos[1], cameraPos[2]);
     
@@ -32,6 +34,14 @@ function main() {
     });
 
     cameraSetup();
+
+    // If the space bar is pressed, trigger the animation event
+    document.addEventListener('keydown', function(event) {
+        if (event.code == 'Space') {
+            ufoAnimation = true;
+            animationStartTime = performance.now() * 0.0005;
+        }
+    });
     
     const scene = new THREE.Scene();
     let bgTexture;
@@ -340,13 +350,94 @@ function main() {
         objLoader.load('../lib/models/meteor/model.obj', (root) => {
             root.scale.setScalar(20);
             root.position.x = 0;
-            root.position.y = 150;
+            root.position.y = 0;
             root.position.z = 0;
             rock = root;
             scene.add(root);
         });
         });
     }
+
+    // Rocket ship by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/4mPkOKdzAk-)
+    let rocket;
+    {
+        // Load in the rocket object
+        const objLoader = new OBJLoader();
+        const mtlLoader = new MTLLoader();
+        mtlLoader.load('../lib/models/rocket/RocketShip.mtl', (mtl) => {
+            mtl.preload();
+            objLoader.setMaterials(mtl);
+        objLoader.load('../lib/models/rocket/RocketShip.obj', (root) => {
+            root.scale.setScalar(5);
+            root.position.x = 0;
+            root.position.y = 150;
+            root.position.z = 0;
+            rocket = root;
+            scene.add(root);
+        });
+        });
+    }
+
+    // Flying saucer by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/6hu2h8v78mO)
+    let ufo;
+    {
+        // Load in the rocket object
+        const objLoader = new OBJLoader();
+        const mtlLoader = new MTLLoader();
+        mtlLoader.load('../lib/models/ufo/CUPIC_FYINGSAUCER.mtl', (mtl) => {
+            mtl.preload();
+            objLoader.setMaterials(mtl);
+        objLoader.load('../lib/models/ufo/CUPIC_FYINGSAUCER.obj', (root) => {
+            root.scale.setScalar(0);
+            root.position.x = 0;
+            root.position.y = 175;
+            root.position.z = 0;
+            ufo = root;
+            scene.add(root);
+        });
+        });
+    }
+
+    let ufoBeam;
+    {
+        const radius = 0;
+        const height = 200;
+        const radialsegments = 20;
+        const geometry = new THREE.ConeGeometry( radius, height, radialsegments );
+
+        const mat = new THREE.MeshBasicMaterial({
+            color: 0xFFFFFF,
+            transparent: true,
+            opacity: 0.3
+        });
+
+        const mesh = new THREE.Mesh( geometry, mat );
+        mesh.position.set(0, 100, 0 );
+        ufoBeam = mesh;
+        scene.add(mesh);
+    }
+
+    // Cow by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/0OToIgkcVM7)
+    let cow;
+    {
+        // Load in the rocket object
+        const objLoader = new OBJLoader();
+        const mtlLoader = new MTLLoader();
+        mtlLoader.load('../lib/models/cow/Cow.mtl', (mtl) => {
+            mtl.preload();
+            objLoader.setMaterials(mtl);
+        objLoader.load('../lib/models/cow/Cow.obj', (root) => {
+            root.scale.setScalar(2);
+            root.position.x = 0;
+            root.position.y = 80;
+            root.position.z = 0;
+            root.rotation.y = 90;
+            cow = root;
+            scene.add(root);
+        });
+        });
+    }
+
     
     let sunlight;
     {
@@ -374,9 +465,22 @@ function main() {
         // Hemisphere light
         const skyColor = 0x330066;
         const groundColor = 0x330066;
-        const intensity = 3;
+        const intensity = 4;
         const hemisphereLight = new THREE.HemisphereLight(skyColor, groundColor, intensity);
         scene.add(hemisphereLight);
+    }
+
+    let rocketLight;
+    {
+        // Point light for the back of the rocket
+        const color = 0xFFAA00;
+		const intensity = 1000000;
+        const distance = 100;
+        const decay = 2; 
+		const light = new THREE.PointLight( color, intensity, distance, decay );
+		light.position.set( 0, 0, 0 );
+        rocketLight = light;
+		scene.add( light );
     }
 
     function resizeRendererToDisplaySize( renderer ) {
@@ -404,10 +508,44 @@ function main() {
             camera.updateProjectionMatrix();
 
         }
+
+        if (ufoAnimation == true) {
+            if (ufo) {
+                let timePassed = time - animationStartTime;
+                if (timePassed > 11) {
+                    ufo.scale.setScalar(0);
+                    ufoBeam.geometry.dispose();
+                    ufoBeam.geometry = new THREE.ConeGeometry(0, 150, 20);
+                    ufoAnimation = false;
+                }
+                else {
+                    if (timePassed < 2) {
+                        ufo.scale.setScalar(Math.sin(Math.PI * timePassed/4));
+                    }
+                    else if (timePassed < 4) {
+                        ufoBeam.geometry.dispose();
+                        ufoBeam.geometry = new THREE.ConeGeometry(80 * (Math.sin(Math.PI * (timePassed - 2)/4)), 150, 20);
+                    }
+                    else if (timePassed < 6) {
+                        cow.position.y += 0.25 * (timePassed - 4);
+                    }
+                    else if (timePassed < 7) {
+                        cow.position.y = 80;
+                    }
+                    else if (timePassed < 9) {
+                        ufoBeam.geometry.dispose();
+                        ufoBeam.geometry = new THREE.ConeGeometry((80 * (Math.cos(Math.PI * (timePassed - 7)/4))), 150, 20);
+                    }
+                    else if (timePassed < 11) {
+                        ufo.scale.setScalar(Math.cos(Math.PI * (timePassed - 9)/4));
+                    }
+                }
+            }
+        }
         
         // Make the shapes orbit the origin
-        sun.position.x = 500 * Math.cos(time);
-        sun.position.y = 500 * Math.sin(time);
+        sun.position.x = 500 * Math.cos(.7 * time);
+        sun.position.y = 500 * Math.sin(.7 * time);
         moon.position.x = 160 * Math.cos((time + Math.PI)* 0.8);
         moon.position.y = 160 * Math.sin((time + Math.PI) * 0.8);
 
@@ -435,8 +573,8 @@ function main() {
         octoMesh6.position.y = starLoc/2 * Math.sin(time/starSpeed + 20);
         octoMesh6.position.z = starLoc * Math.cos(time/starSpeed + 30);
 
-        sunlight.position.x = 500 * Math.cos(time);
-        sunlight.position.y = 500 * Math.sin(time)
+        sunlight.position.x = 500 * Math.cos(.7 * time);
+        sunlight.position.y = 500 * Math.sin(.7 * time);
 
         jupiter.position.x = 300 * Math.cos(time);
         jupiter.position.z = 300 * Math.sin(time);
@@ -448,6 +586,23 @@ function main() {
             rock.position.z = 200 * Math.cos(2 * time);
             rock.rotation.x += 0.01;
             rock.rotation.y += 0.01;
+        }
+
+        if (rocket) {
+            rocket.position.x = -400 * Math.cos(1 * time);
+            rocket.position.y = 400 * Math.sin(1 * time);
+            rocket.position.z = 400 * Math.sin(1 * time);
+
+            var velocity = new THREE.Vector3(-400 * Math.sin(1 * time), 400 * Math.cos(1 * time), 400 * Math.cos(1 * time));
+            velocity.normalize();
+            var angle = Math.atan2(velocity.x, velocity.y);
+
+            rocket.rotation.z = angle;
+            rocket.rotation.x = 45;
+
+            rocketLight.position.x = rocket.position.x - 10 * velocity.x;
+            rocketLight.position.y = rocket.position.y - 10 * velocity.y;
+            rocketLight.position.z = rocket.position.z - 10 * velocity.z;
         }
 
         renderer.render( scene, camera );

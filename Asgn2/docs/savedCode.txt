@@ -65,3 +65,488 @@
         // Left side of cube
         drawTriangle3D([0.0,1.0,0.0,    0.0,0.0,1.0,    0.0,0.0,0.0]);
         drawTriangle3D([0.0,1.0,0.0,    0.0,1.0,1.0,    0.0,0.0,1.0]);
+
+
+
+
+
+
+CONTROLLER
+
+#pragma once
+
+#include <memory>
+#include <iostream>
+#include <stdint.h>
+
+class Controller {
+    private:
+        uint8_t _a;
+        uint8_t _b;
+        uint8_t _select;
+        uint8_t _start;
+        uint8_t _up;
+        uint8_t _down;
+        uint8_t _left;
+        uint8_t _right;
+
+    public:
+        Controller();
+
+        void clearController();
+        uint8_t readControllerStatus() const;
+        void detectClick(int x, int y);
+};
+
+
+#include "controller.h"
+
+Controller::Controller() {
+    clearController();
+}
+
+// Clears the controller data to 0
+void Controller::clearController() {
+    _a = 0;
+    _b = 0;
+    _select = 0;
+    _start = 0;
+    _up = 0;
+    _down = 0;
+    _left = 0;
+    _right = 0;
+}
+
+// Sends the controller status to the CPU
+uint8_t Controller::readControllerStatus() const{
+    uint8_t status = (_a << 7) | (_b << 6) | (_select << 5) | (_start << 4) | (_up << 3) | (_down << 2) | (_left << 1) | (_right);
+    return status;
+}
+
+// If the mouse is clicked on the screen, determine if a controller button was pressed
+void Controller::detectClick(int x, int y) {
+    if (x >= 120 && x < 160 && y >= 680 && y <720) {
+        _up = 1;
+    } else if (x >= 120 && x < 160 && y >= 760 && y < 800) {
+        _down = 1;
+    } else if (x >= 80 && x < 120 && y >= 720 && y < 760) {
+        _left = 1;
+    } else if (x >= 160 && x < 200 && y >= 720 && y < 760) {
+        _right = 1;
+    } else if (x >= 340 && x < 420 && y >= 660 && y < 700) {
+        _select = 1;
+    } else if (x >= 460 && x < 540 && y >= 660 && y < 700) {
+        _start = 1;
+    } else if (x >= 340 && x < 420 && y >= 740 && y < 820) {
+        _a = 1;
+    } else if (x >= 460 && x < 540 && y >= 740 && y < 820) {
+        _b = 1;
+    }
+}
+
+
+
+
+
+GPU
+
+
+#include "gpu.h"
+#include "console.h"
+
+const int WIDTH = 64;   
+const int HEIGHT = 64;
+const int PIXEL_SIZE = 10;
+const int WINDOW_WIDTH = WIDTH * PIXEL_SIZE;
+const int WINDOW_HEIGHT = HEIGHT * PIXEL_SIZE;
+
+//frame(new uint8_t[totalFrame])
+GPU::GPU(Console* console) {
+    _console = console;
+    clearFrame();
+
+    // Initialize the SDL variables
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    _window = SDL_CreateWindow("Banana", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT + 200, SDL_WINDOW_SHOWN);
+    if (_window == nullptr) {
+        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+    if (_renderer == nullptr) {
+        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    //_controllerTexture = IMG_LoadTexture(_renderer, "controller.png");
+}
+
+uint16_t GPU::getPixelAddress(int width, int height){
+    int pixel_index = width + (height * frameHeight); 
+    int pixel_offset = 1 * pixel_index; 
+    return 0x6000 + pixel_offset;
+}
+
+void GPU::setPixel(int width, int height, uint8_t color){
+    uint16_t address = getPixelAddress(width, height);
+    frame[width + (height * frameHeight)] = color;
+    
+}
+
+// Renders the frame to the screen
+void GPU::renderFrame(void){
+    uint8_t pixels[frameHeight * frameWidth * 4];
+    for (int height = 0; height < frameHeight; height++) {
+        for (int width = 0; width < frameWidth; width++) {
+            int index = width + (height * frameHeight);
+            pixels[index*4] = frame[index];
+            pixels[index*4 + 1] = frame[index];
+            pixels[index*4 + 2] = frame[index];
+            pixels[index*4 + 3] = 255;
+        }
+    }
+
+    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0);
+    SDL_RenderClear(_renderer);
+
+    // Draw pixels
+    for (int y = 0; y < HEIGHT; ++y) {
+        for (int x = 0; x < WIDTH; ++x) {
+            uint32_t color = getPixelColor(pixels, x, y);
+            //std::cout << std::hex << color << std::dec << std::endl;
+            SDL_Rect pixelRect = { x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE };
+            SDL_SetRenderDrawColor(_renderer,  color >> 24, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+            SDL_RenderFillRect(_renderer, &pixelRect);
+        }
+    }
+
+    // Add buttons to the screen for the controller 
+    SDL_SetRenderDrawColor(_renderer,  0xFF, 0xFF, 0xFF, 0xFF);
+
+    SDL_Rect upButton = { 120, 680, 40, 40 };
+    SDL_RenderFillRect(_renderer, &upButton);
+
+    SDL_Rect downButton = { 120, 760, 40, 40 };
+    SDL_RenderFillRect(_renderer, &downButton);
+
+    SDL_Rect leftButton = { 80, 720, 40, 40 };
+    SDL_RenderFillRect(_renderer, &leftButton);
+
+    SDL_Rect rightButton = { 160, 720, 40, 40 };
+    SDL_RenderFillRect(_renderer, &rightButton);
+
+    SDL_Rect selectButton = { 340, 660, 80, 40 };
+    SDL_RenderFillRect(_renderer, &selectButton);
+
+    SDL_Rect startButton = { 460, 660, 80, 40 };
+    SDL_RenderFillRect(_renderer, &startButton);
+
+    SDL_Rect aButton = { 340, 740, 80, 80 };
+    SDL_RenderFillRect(_renderer, &aButton);
+
+    SDL_Rect bButton = { 460, 740, 80, 80 };
+    SDL_RenderFillRect(_renderer, &bButton);
+
+    // Update screen
+    SDL_RenderPresent(_renderer);
+}
+
+// Clears the pixel frame
+void GPU::clearFrame(void){
+    for(int i = 0; i < totalFrame; i++){
+        frame[i] = 0x00;
+    }
+}
+
+// Prints out the color values of each pixel
+void GPU::printFrame(void) const{
+    for (int height = 0; height < frameHeight; height++) {
+        for (int width = 0; width < frameWidth; width++) {
+            int index = height * frameWidth + width;
+            uint8_t color = frame[index];
+            std::cout << (int)color << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+// Function to get pixel color from the array
+uint32_t GPU::getPixelColor(const Uint8* pixels, int x, int y) const{
+    int index = (y * WIDTH + x) * 4;
+    Uint8 r = pixels[index];
+    Uint8 g = pixels[index + 1];
+    Uint8 b = pixels[index + 2];
+    Uint8 a = pixels[index + 3];
+    return SDL_MapRGBA(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), r, g, b, a);
+}
+
+
+
+CONSOLE
+
+#include "console.h"
+
+Console::Console(std::string &slug_filename) {
+  _memory = new Memory(this, slug_filename);
+  _cpu = new CPU(this);
+  _gpu = new GPU(this);
+  _controller = new Controller();
+
+  run_setup();
+  run_loop();
+}
+
+// Runs the setup function in the slug file
+void Console::run_setup() {
+  _cpu->_pc = 0xfffc;
+  uint32_t setup_address = _memory->read32(0x81e0);
+  _cpu->jal(setup_address / 4);
+
+  while (true) {
+    // If the PC is out of range, break the loop
+    if (_cpu->_pc < 0x8000) {
+      break;
+    }
+
+    // Otherwise, continue executing the next instruction
+    _cpu->execute_instruction(_memory->read32(_cpu->_pc));
+  }
+}
+
+// Runs the loop function in the slug file and updates the screen after each loop
+void Console::run_loop() {
+  uint32_t loop_address = _memory->read32(0x81e4);
+  // While the stop signal has not yet been sent, run the game loop repeately
+  while (true) {
+    _cpu->_pc = 0xfffc;
+    _cpu->jal(loop_address / 4);
+
+    while (true) {
+      // If the PC is out of range, break the inner loop
+      if (_cpu->_pc < 0x8000) {
+        break;
+      }
+
+      // Otherwise, continue executing the next instruction
+      _cpu->execute_instruction(_memory->read32(_cpu->_pc));
+    }
+
+    _controller->clearController();
+
+    // Sets up the QUIT event for SDL
+    SDL_Event event;
+    while (SDL_PollEvent(&event) != 0) {
+      if (event.type == SDL_QUIT) {
+        // After we are done printing to the screen, close SDL and exit the program
+        SDL_DestroyRenderer(_gpu->_renderer);
+        SDL_DestroyWindow(_gpu->_window);
+        SDL_Quit();
+        exit(0);
+      } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        if (event.button.button == SDL_BUTTON_LEFT) {
+          int x, y;
+          SDL_GetMouseState(&x, &y);
+          _controller->detectClick(x, y);
+        }
+      }
+    }
+
+    // Update the pixel values
+    for(int height = 0; height < frameHeight; ++height){
+      for(int width = 0; width < frameWidth; ++width){
+        uint16_t address = _gpu->getPixelAddress(width, height);
+        uint8_t color = _memory->read8(address);
+        _gpu->setPixel(width, height, color);
+      }
+    }
+
+    // Render
+    _gpu->renderFrame();
+  }
+}
+
+
+
+
+MEMORY
+
+
+#include "memory.h"
+
+#include <fstream>
+#include <iostream>
+
+#include "console.h"
+
+enum IOAddresses {
+  CONTROLLER_ADDR = 0x7000,
+  STDIN_ADDR = 0x7100,
+  STDOUT_ADDR = 0x7110,
+  STDERR_ADDR = 0x7120,
+  EXIT_ADDR = 0x7200,
+};
+
+Memory::Memory(Console *console, std::string &slug_filename) {
+  _console = console;
+  _memory = std::make_unique<uint8_t[]>(0x10000);
+
+  // Set all of the RAM memory to 0
+  for (int i = 0; i < 0x7000; i++) {
+    _memory[i] = 0;
+  }
+
+  // Copy all data from the slug file to address 0x8000
+  // Open the file
+  std::ifstream slug_file(slug_filename, std::ios::binary);
+
+  // Check if file is opened successfully
+  if (!slug_file.is_open()) {
+    std::cerr << "Error opening file: " << slug_filename << std::endl;
+    return;
+  }
+
+  // Read the contents of the file into the allocated memory
+  slug_file.read((char *)(_memory.get() + 0x8000), 0x8000);
+
+  // Copy data section of slug_file to the correct location in RAM
+  // Get the information about the data section from the slug file
+  uint32_t load_data_address = read32(0x81e8) - 0x8000;
+  uint32_t program_data_address = read32(0x81ec);
+  uint32_t data_size = read32(0x81f0);
+
+  // Reset the file pointer to the start of the data and copy it to RAM
+  slug_file.seekg(load_data_address, std::ios::beg);
+  slug_file.read((char *)(_memory.get() + program_data_address), data_size);
+}
+
+uint32_t Memory::read32(uint16_t addr) {
+  // If the address is out of the valid read zone, check if it is an IO address
+  if (addr >= 0x7000 && addr < 0x8000) {
+    if (addr == CONTROLLER_ADDR) {
+      return _console->_controller->readControllerStatus();
+    } else if (addr == STDIN_ADDR) {
+      uint8_t input;
+      std::cin >> input;
+      return input;
+    }
+    return 0;
+  }
+
+  return (_memory[addr] << 24) | (_memory[addr + 1] << 16) |
+         (_memory[addr + 2] << 8) | _memory[addr + 3];
+}
+
+void Memory::write32(uint16_t addr, uint32_t value) {
+  // If the address is out of the valid write zone, check if it is an IO address
+  if (addr > 0x7000) {
+    if (addr == STDOUT_ADDR) {
+      std::cout << (uint8_t)value;
+    } else if (addr == STDERR_ADDR) {
+      std::cerr << (uint8_t)value;
+    } else if (addr == EXIT_ADDR) {
+      // After we are done printing to the screen, close SDL
+      SDL_DestroyRenderer(_console->_gpu->_renderer);
+      SDL_DestroyWindow(_console->_gpu->_window);
+      SDL_Quit();
+      exit(0);
+    }
+    return;
+  }
+
+  _memory[addr] = (value >> 24) & 0xff;
+  _memory[addr + 1] = (value >> 16) & 0xff;
+  _memory[addr + 2] = (value >> 8) & 0xff;
+  _memory[addr + 3] = value & 0xff;
+}
+
+uint16_t Memory::read16(uint16_t addr) {
+  // If the address is out of the valid read zone, check if it is an IO address
+  if (addr >= 0x7000 && addr < 0x8000) {
+    if (addr == CONTROLLER_ADDR) {
+      return _console->_controller->readControllerStatus();
+    } else if (addr == STDIN_ADDR) {
+      uint8_t input;
+      std::cin >> input;
+      return input;
+    }
+    return 0;
+  }
+
+  return (_memory[addr] << 8) | _memory[addr + 1];
+}
+
+void Memory::write16(uint16_t addr, uint16_t value) {
+  // If the address is out of the valid write zone, check if it is an IO address
+  if (addr > 0x7000) {
+    if (addr == STDOUT_ADDR) {
+      std::cout << (uint8_t)value;
+    } else if (addr == STDERR_ADDR) {
+      std::cerr << (uint8_t)value;
+    } else if (addr == EXIT_ADDR) {
+      // After we are done printing to the screen, close SDL
+      SDL_DestroyRenderer(_console->_gpu->_renderer);
+      SDL_DestroyWindow(_console->_gpu->_window);
+      SDL_Quit();
+      exit(0);
+    }
+    return;
+  }
+
+  _memory[addr] = (value >> 8) & 0xff;
+  _memory[addr + 1] = (value) & 0xff;
+}
+
+uint8_t Memory::read8(uint16_t addr) {
+  // If the address is out of the valid read zone, check if it is an IO address
+  if (addr >= 0x7000 && addr < 0x8000) {
+    if (addr == CONTROLLER_ADDR) {
+      return _console->_controller->readControllerStatus();
+    } else if (addr == STDIN_ADDR) {
+      uint8_t input;
+      std::cin >> input;
+      return input;
+    }
+    return 0;
+  }
+
+  return _memory[addr];
+}
+
+void Memory::write8(uint16_t addr, uint8_t value) {
+  // If the address is out of the valid write zone, check if it is an IO address
+  if (addr > 0x7000) {
+    if (addr == STDOUT_ADDR) {
+      std::cout << (uint8_t)value;
+    } else if (addr == STDERR_ADDR) {
+      std::cerr << (uint8_t)value;
+    } else if (addr == EXIT_ADDR) {
+      // After we are done printing to the screen, close SDL
+      SDL_DestroyRenderer(_console->_gpu->_renderer);
+      SDL_DestroyWindow(_console->_gpu->_window);
+      SDL_Quit();
+      exit(0);
+    }
+    return;
+  }
+
+  _memory[addr] = value;
+}
+
+
+
+
+CPU
+
+#define CONTROLLER_A_MASK      ((uint8_t)0x80)
+#define CONTROLLER_B_MASK      ((uint8_t)0x40)
+#define CONTROLLER_SELECT_MASK ((uint8_t)0x20)
+#define CONTROLLER_START_MASK  ((uint8_t)0x10)
+#define CONTROLLER_UP_MASK     ((uint8_t)0x08)
+#define CONTROLLER_DOWN_MASK   ((uint8_t)0x04)
+#define CONTROLLER_LEFT_MASK   ((uint8_t)0x02)
+#define CONTROLLER_RIGHT_MASK  ((uint8_t)0x01)
